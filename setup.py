@@ -25,8 +25,8 @@ setup(
         "Operating System :: OS Independent",
         "Topic :: Utilities",
     ],
-    python_requires=">=3.8",
+    python_requires=">=3.9",
     zip_safe=False,
     install_requires=[],
-    packages=find_packages(exclude=["examples"])
+    packages=find_packages()
 )
