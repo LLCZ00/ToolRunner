@@ -59,13 +59,11 @@ class Tools:
     """Class for collecting tool configurations and spawning their processes"""
     default_output_dir = None
     default_tools = {
-        "cli" : {}, # GUI tools, no output data, run in new process
-        "gui" : {}, # CLI tools, output to file
-        "cmd" : {}  # Cmd commands (netstat, tasklist, etc.)
+        "cli" : {},
+        "gui" : {},
         }
     def __init__(self, target: str = None, output_dir: str = None, config: dict = dict(), verbose: bool = True):
         self.tools = self.default_tools
-        self.output_handle = None
         self.target = target
         self.output_dir = output_dir
         self.verbose = verbose
@@ -80,12 +78,12 @@ class Tools:
 
     """ Methods for adding tools """
     
-    def add_tool(self,
+    def __add_tool(self,
         name: str,
         path: str,
         args: list,
         tool_type: str):
-        """Add tool to tools dictionary, by tool type"""
+        """Add tool to Tools dictionary, by tool type"""
         self.tools[tool_type][name] = [path]
         for arg in args:
             self.tools[tool_type][name].extend(arg.split(" ")) # Spliting arguments by whitespace (if left in)
@@ -94,25 +92,19 @@ class Tools:
         name: str, 
         path: str, 
         args: list = []):
-        """Add CLI tool to tools dictionary"""
-        self.add_tool(name=name, path=path, args=args, tool_type="cli")
+        """Add CLI tool to Tools dictionary"""
+        self.__add_tool(name=name, path=path, args=args, tool_type="cli")
         
     def gui(self, 
         name: str, 
         path: str, 
         args: list = []):
-        """Add CLI tool to tools dictionary"""
-        self.add_tool(name=name, path=path, args=args, tool_type="gui")
-        
-    def cmd(self, 
-        name: str, 
-        args: list = []):
-        """Add cmd/shell command to tools dictionary"""
-        self.add_tool(name=name, path=name, args=args, tool_type="cmd")
+        """Add GUI tool to Tools dictionary"""
+        self.__add_tool(name=name, path=path, args=args, tool_type="gui")
   
     """ Methods for running tools """
   
-    def run_type(self, 
+    def __run_type(self, 
         tool_type: str, 
         input_target: bool, 
         output: bool, 
@@ -149,7 +141,7 @@ class Tools:
         new_proc: bool = False,
         **kwargs):
         """Run all CLI-type tools"""
-        self.run_type(tool_type="cli", input_target=input_target, output=output, new_proc=new_proc, **kwargs)
+        self.__run_type(tool_type="cli", input_target=input_target, output=output, new_proc=new_proc, **kwargs)
         
     def run_gui(self, 
         input_target: bool = True, 
@@ -157,21 +149,12 @@ class Tools:
         new_proc: bool = True,
         **kwargs):
         """Run all GUI-type tools"""
-        self.run_type(tool_type="gui", input_target=input_target, output=output, new_proc=new_proc, **kwargs)
-                
-    def run_cmd(self, 
-        input_target: bool = False, 
-        output: bool = True, 
-        new_proc: bool = False,
-        **kwargs):
-        """Run all CLI-type tools"""
-        self.run_type(tool_type="cmd", input_target=input_target, output=output, new_proc=new_proc, **kwargs)
-    
+        self.__run_type(tool_type="gui", input_target=input_target, output=output, new_proc=new_proc, **kwargs)
+        
     def run_all(self, **kwargs):
-        """Run all tools"""
+        """Run all gui and cli tools"""
         self.run_gui(**kwargs)
         self.run_cli(**kwargs)
-        self.run_cmd(**kwargs)
         
     def print_config(self):
         """Print Tools dictionary in copy/pastable format"""
